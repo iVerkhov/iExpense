@@ -8,19 +8,68 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @State private var expenses = Expenses()
+    
+    @State private var showingSheet = false
+    
+    let localCurrency = Locale.current.currency?.identifier ?? "USD"
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                Section("Personal") {
+                    ForEach(expenses.items.filter { $0.type == "Personal" }) { item in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .font(.headline)
+                                Text(item.type)
+                            }
+                            Spacer()
+                            Text(item.amount, format: .localCurrency)
+                                .style(for: item)
+                        }
+                        .accessibilityElement()
+                        .accessibilityLabel("\(item.name) \(item.amount.formatted(.currency(code: "USD")))")
+                        .accessibilityHint(item.type)
+                    }
+                    .onDelete(perform: removeItems)
+                }
+                
+                Section("Buiseness") {
+                    ForEach(expenses.items.filter { $0.type == "Buiseness" }) { item in
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                    .font(.headline)
+                                Text(item.type)
+                            }
+                            Spacer()
+                            Text(item.amount, format: .localCurrency)
+                                .style(for: item)
+                        }
+                    }
+                    .onDelete(perform: removeItems)
+                }
+            }
+            .navigationTitle("iExpense")
+            .sheet(isPresented: $showingSheet) {
+                AddView(expenses: expenses)
+            }
+            .toolbar {
+                Button("Add Expense", systemImage: "plus") {
+                    showingSheet.toggle()
+                }
+            }
         }
-        .padding()
+    }
+    
+    func removeItems(at offsets: IndexSet) {
+        expenses.items.remove(atOffsets: offsets)
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
 }
