@@ -20,7 +20,6 @@ struct AddView: View {
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
-        NavigationStack {
             Form {
 //                TextField("Name", text: $name)
                 
@@ -49,8 +48,6 @@ struct AddView: View {
             .navigationTitle($name)
             .navigationBarBackButtonHidden()
             .navigationBarTitleDisplayMode(.inline)
-        }
-            
     }
 }
 
